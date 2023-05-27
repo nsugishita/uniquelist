@@ -12,7 +12,7 @@ using arraylistparent = uniquelist::unique_array_list_super_class<double, unique
 
 // TODO Make UniqueList pickable.
 
-PYBIND11_MODULE(uniquelist, m) {
+PYBIND11_MODULE(uniquelistpy, m) {
     m.doc() = "uniquelist extension";
 
    py::class_<intlist>(m, "UniqueList")
