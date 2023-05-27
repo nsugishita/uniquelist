@@ -78,5 +78,6 @@ $ cmake --install build
 To use the Python interface set `PYTHONPATH`.
 
 ```shell
-PYTHONPATH="$PYTHONPATH":"$(pwd)/build" python tests/test.py
+$ export PYTHONPATH="$PYTHONPATH":"$(pwd)/build"
+$ python tests/test.py
 ```
