@@ -87,4 +87,5 @@ To use the Python interface set `PYTHONPATH`.
 ```shell
 $ export PYTHONPATH="$PYTHONPATH":"$(pwd)/build"
 $ python tests/test.py
+$ python -m doctest README.md  # Run doctest on README.md.
 ```
