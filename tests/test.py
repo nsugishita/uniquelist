@@ -3,7 +3,7 @@
 """Description of this file"""
 
 import numpy as np
-import uniquelist
+import uniquelistpy
 
 
 def main():
@@ -12,7 +12,7 @@ def main():
 
 
 def test_int_list():
-    lst = uniquelist.UniqueList()
+    lst = uniquelistpy.UniqueList()
     np.testing.assert_equal(lst.size(), 0)
     x = lst.push_back(2)
     np.testing.assert_equal(x, (0, True))
@@ -33,7 +33,7 @@ def test_int_list():
 
 
 def test_array_list():
-    lst = uniquelist.UniqueArrayList(3)
+    lst = uniquelistpy.UniqueArrayList(3)
     np.testing.assert_equal(lst.size(), 0)
     x = lst.push_back([0, 1.5, 2])
     np.testing.assert_equal(x, (0, True))
