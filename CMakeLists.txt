@@ -34,30 +34,7 @@ target_compile_features(uniquelistpy PRIVATE cxx_std_20)
 
 
 # Run tests.
-
-include(FetchContent)
-FetchContent_Declare(
-  googletest
-  URL https://github.com/google/googletest/archive/03597a01ee50ed33e9dfd640b249b4be3799d395.zip
-)
-# For Windows: Prevent overriding the parent project's compiler/linker settings
-set(gtest_force_shared_crt ON CACHE BOOL "" FORCE)
-FetchContent_MakeAvailable(googletest)
-enable_testing()
-
-add_executable(
-  uniquelist_test
-  tests/test_v1_utils_unique_list.cpp
-)
-target_link_libraries(
-  uniquelist_test
-  GTest::gtest_main
-  uniquelist::uniquelist
-)
-
-include(GoogleTest)
-gtest_discover_tests(uniquelist_test)
-
+add_subdirectory(tests)
 
 # for CMAKE_INSTALL_LIBDIR, CMAKE_INSTALL_BINDIR, CMAKE_INSTALL_INCLUDEDIR etc.
 include(GNUInstallDirs)
