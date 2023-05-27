@@ -35,12 +35,41 @@ Below is an example use in Python.
 
 ```
 
+`UniqueArrayList` handles arrays.
+
+```python3
+>>> import uniquelistpy
+>>> lst = uniquelistpy.UniqueArrayList(3)
+>>> lst.push_back([0, 1.5, 2])
+(0, True)
+>>> lst.push_back([2, 1, 2.1])
+(1, True)
+>>> lst.push_back([-1, 0.8, 0])
+(2, True)
+>>> lst.push_back([2, 1, 2.1])
+(1, False)
+>>> lst.push_back([-1, 0.8, -1])
+(3, True)
+>>> lst.size()
+4
+>>> lst.erase_nonzero([1, 0, 0, 1])
+>>> lst.size()
+2
+>>> lst.push_back([2, 1, 2.1])
+(0, False)
+>>> lst.push_back([-1, 0.8, -1])
+(2, True)
+>>> lst.size()
+3
+
+```
+
 # Install
 
 This uses CMake and pybind11.
 Typical commands to build the library are as follows.
 
-```sh
+```shell
 $ cmake -S . -B build
 $ cmake --build build
 $ cmake --install build
@@ -48,6 +77,6 @@ $ cmake --install build
 
 To use the Python interface set `PYTHONPATH`.
 
-```sh
+```shell
 PYTHONPATH="$PYTHONPATH":"$(pwd)/build" python tests/test.py
 ```
