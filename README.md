@@ -75,6 +75,13 @@ $ cmake --build build
 $ cmake --install build
 ```
 
+To run the tests type the following commands.
+
+```shell
+$ cd build/tests
+$ ctest
+```
+
 To use the Python interface set `PYTHONPATH`.
 
 ```shell
