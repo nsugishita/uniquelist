@@ -1,11 +1,12 @@
 #include <vector>
 #include <iostream>
+#include <iterator>  // std::back_inserter
 
 #include <gtest/gtest.h>
 
 #include "uniquelist/uniquelist.h"
 
-TEST(TestUtilsUniqueList, TestUniqueList) {
+TEST(TestUtilsUniqueList, TestUniqueArrayList) {
   {
     using T = double;
     uniquelist::unique_array_list<T, uniquelist::strictly_less> list;

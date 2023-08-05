@@ -14,7 +14,8 @@ enable_testing()
 
 add_executable(
     ${PROJECT_NAME}
-    test_v1_utils_unique_list.cpp
+    test_v1_utils_uniquelist.cpp
+    test_v1_utils_unique_array_list.cpp
 )
 target_link_libraries(
     ${PROJECT_NAME}

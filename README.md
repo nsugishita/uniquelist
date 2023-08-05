@@ -4,7 +4,7 @@ C++/Python library which provides a list which stores unique elements/arrays.
 This is similar to `set` in C++/Python, but this sorts the elements in the order of addition.
 C++ and Python interfaces are available.
 
-# Example
+# Python Example
 
 Below is an example use in Python.
 
@@ -64,6 +64,43 @@ Below is an example use in Python.
 >>> lst.erase_nonzero([1, 1, 0])
 >>> lst.size()  # [-1]
 1
+
+```
+
+# C++ Example
+
+Next examples are in C++.
+
+```c++
+uniquelist::uniquelist<T> list;
+// `list.push_back` adds an item to the list if it is not yet in the list.
+// It returns a pair of the position in the list and a flag indicating
+// if the item is new or not.
+list.push_back(3.9);  // -> {0, 1}    [3.9]
+list.push_back(-1.0);  // -> {1, 1}   [3.9, -1.0]
+list.push_back(0.0);  // -> {2, 1}    [3.9, -1.0, 0.0]
+list.push_back(-1.0);  // -> {1, 0}   [3.9, -1.0, 0.0]
+
+// One can insert an item using an iterator and `list.insert` member,
+// which returns the same pair as `list.push_back`.
+auto it = std::begin(list);
+++it;
+++it;
+list.insert(it, 3.9);  // -> {0, 0}   [3.9, -1.0, 0.0]
+list.insert(it, 1.0);  // -> {2, 1}   [3.9, -1.0, 1.0, 0.0]
+
+list.isin(-1.0);  // -> true
+std::size(list);  // -> 4
+
+// Iterate over the items in the order of addition.
+for (auto it = list.begin(), end = list.end(); it != end; ++it) {
+  std::cout << *it << std::endl;  // -> 3.9, -1.0, 1.0, 0.0
+}
+
+// Iterate over the items in the increasing order.
+for (auto it = list.sbegin(), end = list.send(); it != end; ++it) {
+  std::cout << *it << std::endl;  // -> -1.0, 0.0, 1.0, 3.9
+}
 
 ```
 

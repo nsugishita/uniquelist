@@ -17,6 +17,8 @@ rm -rf build
 CXX="$CXX" $CMAKE -S . -B build
 CXX="$CXX" $CMAKE --build build
 
+./build/tests/uniquelist_test
+
 pushd tests
 python3 test.py
 popd
