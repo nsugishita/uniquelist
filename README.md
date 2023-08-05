@@ -79,7 +79,7 @@ uniquelist::uniquelist<double> list;
 It returns a pair of the position in the list and a flag indicating
 if the item is new or not.
 
-```
+```c++
 list.push_back(3.9);  // -> {0, 1}    [3.9]
 list.push_back(-1.0);  // -> {1, 1}   [3.9, -1.0]
 list.push_back(0.0);  // -> {2, 1}    [3.9, -1.0, 0.0]
@@ -89,7 +89,7 @@ list.push_back(-1.0);  // -> {1, 0}   [3.9, -1.0, 0.0]
 One can insert an item using an iterator and `list.insert` member,
 which returns the same pair as `list.push_back`.
 
-```
+```c++
 auto it = std::begin(list);
 ++it;
 ++it;
@@ -99,7 +99,7 @@ list.insert(it, 1.0);  // -> {2, 1}   [3.9, -1.0, 1.0, 0.0]
 
 One can query the membership, number of items etc.
 
-```
+```c++
 list.isin(-1.0);  // -> true
 std::size(list);  // -> 4
 ```
@@ -107,7 +107,7 @@ std::size(list);  // -> 4
 `list.begin` returns an iterator to iterate over the items in
 the order of addition.
 
-```
+```c++
 for (auto it = list.begin(), end = list.end(); it != end; ++it) {
   std::cout << *it << std::endl;  // -> 3.9, -1.0, 1.0, 0.0
 }
@@ -116,7 +116,7 @@ for (auto it = list.begin(), end = list.end(); it != end; ++it) {
 `list.sbegin` returns an iterator to iterate over the items in
 the increasing order.
 
-```
+```c++
 for (auto it = list.sbegin(), end = list.send(); it != end; ++it) {
   std::cout << *it << std::endl;  // -> -1.0, 0.0, 1.0, 3.9
 }
