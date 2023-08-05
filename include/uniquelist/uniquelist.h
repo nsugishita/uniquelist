@@ -22,12 +22,43 @@ namespace uniquelist {
  * @brief Linked list which only keeps unique elements
  *
  * This is a linked list which only contains unique elements.
- * Elements in this list shall not be modified after they
+ * Elements in this list must not be modified after they
  * are added until they are removed from the list.
  *
- * Internally, this uses map to sort elements so that
- * membership of an element can be tested quickly.
- * The way to sort elements can be specified by Compare.
+ * Internally, this uses a list and a map to sort elements
+ * in the order of addition and in the increasing order,
+ * respectively. In this way, membership of an element
+ * can be tested quickly while it maintains the order of addition.
+ *
+ * When a new item is added, a new entry is added to the map and
+ * the list. The key of the entry of the map is the newly added
+ * item, while the value is a link to the entry in the list.
+ * Similarly, the entry in the list is a link to the entry in
+ * the map.
+ *
+ * map : [
+ *     <smallest input value, link to the corresponding entry in the list>,
+ *     <2nd smallest input value, link to the corresponding entry in the list>,
+ *     ...
+ *     <largest input value, link to the corresponding entry in the list>
+ * ]
+ *
+ * list : [
+ *     <link to the entry of the 1st input in the map>,
+ *     <link to the entry of the 2nd input in the map>,
+ *     ...
+ *     <link to the entry of the last input in the map>
+ * ]
+ *
+ * When one wants to retrieve the item at position n in terms
+ * of the addition, first the nth entry in the list is obtained.
+ * Then the link of the nth entry in the list is used to retrieve
+ * the corresponding entry in the map. The key of the entry in
+ * the map is the value looked for.
+ *
+ * When one wants to check if an item is already added or not,
+ * one can check the item is in the map as a key or not.
+ *
  */
 template <typename T, typename Compare = std::less<T>> struct uniquelist {
 
@@ -39,13 +70,11 @@ private:
    *
    * Instances of this struct are added to the underlying list.
    * Each instance has an iterator to an item in the map
-   * and that item in the map has an iterator pointint back
+   * and that item in the map has an iterator pointing back
    * to the original element in the list.
    */
   struct list_item_type {
-    using link_type = typename std::map<T, map_item_type, Compare>::iterator;
-
-    link_type link;
+    std::map<T, map_item_type, Compare>::iterator link;
   };
 
   /**
@@ -57,9 +86,7 @@ private:
    * to the original element (and its key) in the map.
    */
   struct map_item_type {
-    using link_type = typename std::list<list_item_type>::iterator;
-
-    link_type link;
+    std::list<list_item_type>::iterator link;
   };
 
   /**
@@ -210,7 +237,7 @@ public:
   /**
    * @brief Add a new item to the end if it is not in the list
    *
-   * @param [in] Value to be copied (or moved) to the new element.
+   * @param [in] Value to be added
    *
    * @return Pair of the position of the given item in the list
    *     and status.  status = true indicates that the item is added
@@ -222,11 +249,7 @@ public:
   /**
    * @brief Add a new item to the end if it is not in the list
    *
-   * This tries to push_back a new element to the list.  If it
-   * is already included, this does not have any effect
-   * (and the argument remains valid).
-   *
-   * @param [in] Value to be copied (or moved) to the new element.
+   * @param [in] Value to be added
    *
    * @return Pair of the position of the given item in the list
    *     and status.  status = true indicates that the item is added
@@ -238,13 +261,10 @@ public:
   /**
    * @brief Add a new item to the end if it is not in the list
    *
-   * This tries to push_back a new element to the list.
-   * If the given element is not in the list, the data is
-   * copied and added to the list.
-   * If it is already included, this does not have any effec
-   * (data is not copied).
-   *
-   * @param [in] Value to be copied to the new element.
+   * @param [in] Value to be added
+   * @param [in] Hook called when the value is added. This may be
+   *     useful when we want to deepcopy the value only if
+   *     the item is new.
    *
    * @return Pair of the position of the given item in the list
    *     and status.  status = true indicates that the item is added
@@ -258,13 +278,9 @@ public:
   /**
    * @brief Insert a new element before the the specified position
    *
-   * This tries to insert a new element to the list.
-   * If the given item is already in the list, this does not have
-   * any effects.
-   *
    * @param [in] Position in the container where
    *     the new elements are inserted.
-   * @param [in] Value to be copied to the new element.
+   * @param [in] Value to be added
    *
    * @return Pair of the position of the given item in the list
    *     and status.  status = true indicates that the item is added
@@ -284,13 +300,9 @@ public:
   /**
    * @brief Insert a new element before the the specified position
    *
-   * This tries to insert a new element to the list.
-   * If the given item is already in the list, this does not have
-   * any effects (and the argument remains valid).
-   *
    * @param [in] Position in the container where
    *     the new elements are inserted.
-   * @param [in] Value to be copied to the new element.
+   * @param [in] Value to be added
    *
    * @return Pair of the position of the given item in the list
    *     and status.  status = true indicates that the item is added
@@ -310,15 +322,12 @@ public:
   /**
    * @brief Insert a new item to the end if it is not in the list
    *
-   * This tries to insert a new element to the list.
-   * If the given element is not in the list, the data is
-   * copied and added to the list.
-   * If it is already included, this does not have any effec
-   * (data is not copied).
-   *
    * @param [in] Position in the container where
    *     the new elements are inserted.
-   * @param [in] Value to be copied to the new element.
+   * @param [in] Value to be added
+   * @param [in] Hook called when the value is added. This may be
+   *     useful when we want to deepcopy the value only if
+   *     the item is new.
    *
    * @return Pair of the position of the given item in the list
    *     and status.  status = true indicates that the item is added
@@ -328,15 +337,14 @@ public:
   template <typename S, typename F>
   auto insert_with_hook(iterator_template<S> position, const value_type &val,
                         const F &f) {
+    // First, add the item without calling the hook.
     auto [try_it, try_status] = map.insert(std::pair(val, map_item_type{}));
     if (try_status) { // If the given item is new.
-      // The shallowcopy is inserted as a new item.
-      // Remember the place, remove the copy and
-      // re-insert a deepcopy.
+      // Remove the item added above and add the one returned by the hook.
       auto hint = try_it; // Pos just before the newly added element.
       ++hint;
-      map.erase(try_it); // Remove the shallow copy.
-      // Creat a deepcopy and re-insert to the map.
+      map.erase(try_it); // Remove the item added above.
+      // Call the hook and re-insert the result to the map.
       auto it = map.emplace_hint(hint, f(val), map_item_type{});
       it->second.link = list.insert(position.unwrap(), list_item_type{it});
       return std::pair<size_t, bool>(
