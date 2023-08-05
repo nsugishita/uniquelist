@@ -11,17 +11,17 @@ Below is an example use in Python.
 ```python3
 >>> import uniquelistpy
 >>> lst = uniquelistpy.UniqueList()
->>> lst.push_back(2)  # Append 2.
+>>> lst.push_back(2)  # -> [2]
 (0, True)
->>> lst.push_back(1)  # Append 1.
+>>> lst.push_back(1)  # -> [2, 1]
 (1, True)
 >>> lst.push_back(2)  # 2 is not appended since it is already in the list.
 (0, False)
->>> lst.push_back(3)
+>>> lst.push_back(3) # -> [2, 1, 3]
 (2, True)
->>> lst.push_back(5)
+>>> lst.push_back(5) # -> [2, 1, 3, 5]
 (3, True)
->>> lst.size()  # List has [2, 1, 3, 5]
+>>> lst.size()
 4
 >>> lst.index(2)
 0
@@ -29,38 +29,41 @@ Below is an example use in Python.
 2
 >>> lst.index(4)
 -1
->>> lst.erase_nonzero([0, 1, 0, 1])  # Remove the 2nd and 4th elements.
+>>> lst.erase_nonzero([0, 1, 0, 1])  # -> [2, 3]
 >>> lst.size()
 2
 
 ```
 
-`UniqueArrayList` handles arrays.
+`UniqueArrayList` handles lists and numpy arrays.
 
 ```python3
->>> import uniquelistpy
->>> lst = uniquelistpy.UniqueArrayList(3)
+>>> lst = uniquelistpy.UniqueArrayList()
 >>> lst.push_back([0, 1.5, 2])
 (0, True)
->>> lst.push_back([2, 1, 2.1])
+>>> lst.push_back([2, 1, 2.1, 4.3])
 (1, True)
->>> lst.push_back([-1, 0.8, 0])
+>>> lst.push_back([0])
 (2, True)
->>> lst.push_back([2, 1, 2.1])
+>>> lst.push_back([2, 1, 2.1, 4.3])  # Adding the same array.
 (1, False)
->>> lst.push_back([-1, 0.8, -1])
+>>> lst.push_back([-1])
 (3, True)
->>> lst.size()
+>>> lst.size()  # [0, 1.5, 2], [2, 1, 2.1, 4.3], [0], [-1]
 4
->>> lst.erase_nonzero([1, 0, 0, 1])
->>> lst.size()
+>>>
+>>> lst.erase([0, 3])
+>>> lst.size()  # [2, 1, 2.1, 4.3], [0]
 2
->>> lst.push_back([2, 1, 2.1])
+>>> lst.push_back([2, 1, 2.1, 4.3])  # Adding the same array again.
 (0, False)
->>> lst.push_back([-1, 0.8, -1])
+>>> lst.push_back([-1])  # This one was deleted.
 (2, True)
->>> lst.size()
+>>> lst.size()  # [2, 1, 2.1, 4.3], [0], [-1]
 3
+>>> lst.erase_nonzero([1, 1, 0])
+>>> lst.size()  # [-1]
+1
 
 ```
 
@@ -74,6 +77,8 @@ $ cmake -S . -B build
 $ cmake --build build
 $ cmake --install build
 ```
+
+See also `build.sh`.
 
 To run the tests type the following commands.
 

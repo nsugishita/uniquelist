@@ -556,30 +556,23 @@ using unique_array_list_super_class =
 template <typename T, typename Compare = std::less<T>>
 struct unique_array_list
     : unique_array_list_super_class<T, Compare> {
-  using uniquelist_ =
-      uniquelist<std::pair<size_t, std::shared_ptr<const T[]>>,
-                  array_less<Compare>>;
 
-  size_t array_size;
-
-  unique_array_list(size_t array_size) : unique_array_list_super_class<T, Compare>{}, array_size{array_size} {}
-
-  auto push_back(const T *key) {
+  auto push_back(size_t n, const T *key) {
     std::shared_ptr<const T[]> key_view = shared_ptr_without_ownership(key);
     auto copy_ = [] (const std::pair<size_t, std::shared_ptr<const T[]>> &a) { return deepcopy<size_t, const T>(a);};
-    return unique_array_list_super_class<T, Compare>::push_back_with_hook({this->array_size, key_view},
+    return unique_array_list_super_class<T, Compare>::push_back_with_hook({n, key_view},
                                              copy_);
   }
 
-  auto insert(typename unique_array_list_super_class<T, Compare>::iterator position, const T *key) {
+  auto insert(typename unique_array_list_super_class<T, Compare>::iterator position, size_t n, const T *key) {
     std::shared_ptr<const T[]> key_view = shared_ptr_without_ownership(key);
-    return unique_array_list_super_class<T, Compare>::insert_with_hook(position, {this->array_size, key_view},
+    return unique_array_list_super_class<T, Compare>::insert_with_hook(position, {n, key_view},
                                           deepcopy<size_t, const T>);
   }
 
-  auto isin(const T *key) const noexcept {
+  auto isin(size_t n, const T *key) const noexcept {
     std::shared_ptr<const T[]> key_view = shared_ptr_without_ownership(key);
-    return unique_array_list_super_class<T, Compare>::isin({this->array_size, key_view});
+    return unique_array_list_super_class<T, Compare>::isin({n, key_view});
   }
 };
 
