@@ -75,7 +75,7 @@ protected:
    * to the original element in the list.
    */
   struct list_item_type {
-    std::map<T, map_item_type, Compare>::iterator link;
+    typename std::map<T, map_item_type, Compare>::iterator link;
   };
 
   /**
@@ -87,7 +87,7 @@ protected:
    * to the original element (and its key) in the map.
    */
   struct map_item_type {
-    std::list<list_item_type>::iterator link;
+    typename std::list<list_item_type>::iterator link;
   };
 
   /**
@@ -612,7 +612,7 @@ struct unique_array_list
   }
 
   template <typename S>
-  auto insert(typename unique_array_list_super_class<T, Compare>::iterator_wrapper<S> position, size_t n, const T *key) {
+  auto insert(typename unique_array_list_super_class<T, Compare>::template iterator_wrapper<S> position, size_t n, const T *key) {
     std::shared_ptr<const T[]> key_view = shared_ptr_without_ownership(key);
     return unique_array_list_super_class<T, Compare>::insert_with_hook(position, {n, key_view},
                                           deepcopy<size_t, const T>);
