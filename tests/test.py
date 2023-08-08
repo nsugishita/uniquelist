@@ -2,11 +2,20 @@
 
 """Description of this file"""
 
-import numpy as np
+try:
+    import numpy as np
+
+    has_numpy = True
+except ImportError:
+    has_numpy = False
+
 import uniquelistpy
 
 
 def main():
+    if not has_numpy:
+        print("numpy not found. skipping tests")
+        return
     test_int_list()
     test_array_list()
 
