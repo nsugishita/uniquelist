@@ -11,6 +11,13 @@ Below is an example use in Python.
 ```python3
 >>> import uniquelistpy
 >>> lst = uniquelistpy.UniqueList()
+
+```
+
+`lst.push_back` returns a tuple of 
+(position in the list, flag to indicate if the item is new or not).
+
+```python
 >>> lst.push_back(2)  # -> [2]
 (0, True)
 >>> lst.push_back(1)  # -> [2, 1]
