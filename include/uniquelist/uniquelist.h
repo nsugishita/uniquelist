@@ -11,11 +11,11 @@
 #ifndef UNIQUELIST_UNIQUELIST_H
 #define UNIQUELIST_UNIQUELIST_H
 
-#include <list>  // std::list
-#include <map>  // std::map
-#include <type_traits>  // std::is_same_v
-#include <memory>  // std::shared_ptr
-#include <utility> // std::pair
+#include <list>        // std::list
+#include <map>         // std::map
+#include <memory>      // std::shared_ptr
+#include <type_traits> // std::is_same_v
+#include <utility>     // std::pair
 
 namespace uniquelist {
 
@@ -121,10 +121,9 @@ protected:
     using pointer = value_type *;
     using reference = value_type &;
 
-    constexpr static bool is_list_iterator = (
-        std::is_same_v<S, typename list_type::iterator>
-        || std::is_same_v<S, typename list_type::const_iterator>
-    );
+    constexpr static bool is_list_iterator =
+        (std::is_same_v<S, typename list_type::iterator> ||
+         std::is_same_v<S, typename list_type::const_iterator>);
 
     explicit iterator_wrapper(const S &it) noexcept : it{it} {}
 
@@ -211,9 +210,11 @@ public:
   using pointer = value_type *;
   using const_pointer = const value_type *;
   using list_iterator_wrapper = iterator_wrapper<typename list_type::iterator>;
-  using const_list_iterator = iterator_wrapper<typename list_type::const_iterator>;
+  using const_list_iterator =
+      iterator_wrapper<typename list_type::const_iterator>;
   using map_iterator_wrapper = iterator_wrapper<typename map_type::iterator>;
-  using const_map_iterator = iterator_wrapper<typename map_type::const_iterator>;
+  using const_map_iterator =
+      iterator_wrapper<typename map_type::const_iterator>;
 
   /* Member functions */
 
@@ -259,7 +260,9 @@ public:
    *
    * @return An iterator to the beginning of the sequence container.
    */
-  auto sbegin() const noexcept { return const_map_iterator_wrapper(std::begin(map)); }
+  auto sbegin() const noexcept {
+    return const_map_iterator_wrapper(std::begin(map));
+  }
 
   /**
    * @brief Returns an iterator referring to the past-the-end element
@@ -273,7 +276,9 @@ public:
    *
    * @return An iterator to the element past the end of the sequence.
    */
-  auto send() const noexcept { return const_map_iterator_wrapper(std::end(map)); }
+  auto send() const noexcept {
+    return const_map_iterator_wrapper(std::end(map));
+  }
 
   /* Capacity */
 
@@ -282,9 +287,7 @@ public:
    *
    * @return true if the container size is 0, false otherwise.
    */
-  auto empty() const noexcept {
-    return list.empty();
-  }
+  auto empty() const noexcept { return list.empty(); }
 
   /**
    * @brief Return size
@@ -361,7 +364,8 @@ public:
   auto insert(iterator_wrapper<S> position, const value_type &val) {
     auto [it, status] = map.insert(std::pair(val, map_item_type{}));
     if (status) {
-      it->second.link = list.insert(position.get_list_iterator(), list_item_type{it});
+      it->second.link =
+          list.insert(position.get_list_iterator(), list_item_type{it});
     }
     return std::pair<size_t, bool>(
         std::distance(std::begin(list), it->second.link), status);
@@ -383,7 +387,8 @@ public:
   auto insert(iterator_wrapper<S> position, value_type &&val) {
     auto [it, status] = map.try_emplace(std::move(val), map_item_type{});
     if (status) {
-      it->second.link = list.insert(position.get_list_iterator(), list_item_type{it});
+      it->second.link =
+          list.insert(position.get_list_iterator(), list_item_type{it});
     }
     return std::pair<size_t, bool>(
         std::distance(std::begin(list), it->second.link), status);
@@ -416,7 +421,8 @@ public:
       map.erase(try_it); // Remove the item added above.
       // Call the hook and re-insert the result to the map.
       auto it = map.emplace_hint(hint, f(val), map_item_type{});
-      it->second.link = list.insert(position.get_list_iterator(), list_item_type{it});
+      it->second.link =
+          list.insert(position.get_list_iterator(), list_item_type{it});
       return std::pair<size_t, bool>(
           std::distance(std::begin(list), it->second.link), try_status);
     } else { // If the given item is not new.
@@ -435,8 +441,7 @@ public:
    * @return An iterator pointint to the element that followed
    *     the element erased by the function call.
    */
-  template <typename S>
-  auto erase(iterator_wrapper<S> it) {
+  template <typename S> auto erase(iterator_wrapper<S> it) {
     if constexpr (iterator_wrapper<S>::is_list_iterator) {
       map.erase(it.get_map_iterator());
       return iterator_wrapper<S>(list.erase(it.get_list_iterator()));

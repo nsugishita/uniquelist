@@ -1,6 +1,6 @@
-#include <vector>
 #include <iostream>
-#include <iterator>  // std::back_inserter
+#include <iterator> // std::back_inserter
+#include <vector>
 
 #include <gtest/gtest.h>
 
@@ -12,25 +12,25 @@ TEST(TestUtilsUniqueList, TestUniquelist) {
     uniquelist::uniquelist<T> list;
 
     {
-      auto [pos, isnew] = list.push_back(3.9);  // -> [3.9]
+      auto [pos, isnew] = list.push_back(3.9); // -> [3.9]
       EXPECT_EQ(pos, 0);
       EXPECT_EQ(isnew, 1);
     }
 
     {
-      auto [pos, isnew] = list.push_back(-1.0);  // -> [3.9, -1.0]
+      auto [pos, isnew] = list.push_back(-1.0); // -> [3.9, -1.0]
       EXPECT_EQ(pos, 1);
       EXPECT_EQ(isnew, 1);
     }
 
     {
-      auto [pos, isnew] = list.push_back(0.0);  // -> [3.9, -1.0, 0.0]
+      auto [pos, isnew] = list.push_back(0.0); // -> [3.9, -1.0, 0.0]
       EXPECT_EQ(pos, 2);
       EXPECT_EQ(isnew, 1);
     }
 
     {
-      auto [pos, isnew] = list.push_back(-1.0);  // -> [3.9, -1.0, 0.0]
+      auto [pos, isnew] = list.push_back(-1.0); // -> [3.9, -1.0, 0.0]
       EXPECT_EQ(pos, 1);
       EXPECT_EQ(isnew, 0);
     }
@@ -38,7 +38,7 @@ TEST(TestUtilsUniqueList, TestUniquelist) {
     {
       auto it = std::begin(list);
       ++it;
-      auto [pos, isnew] = list.insert(it, 0.0);  // -> [3.9, -1.0, 0.0]
+      auto [pos, isnew] = list.insert(it, 0.0); // -> [3.9, -1.0, 0.0]
       EXPECT_EQ(pos, 2);
       EXPECT_EQ(isnew, 0);
     }
@@ -47,7 +47,7 @@ TEST(TestUtilsUniqueList, TestUniquelist) {
       auto it = std::begin(list);
       ++it;
       ++it;
-      auto [pos, isnew] = list.insert(it, 1.0);  // -> [3.9, -1.0, 1.0, 0.0]
+      auto [pos, isnew] = list.insert(it, 1.0); // -> [3.9, -1.0, 1.0, 0.0]
       EXPECT_EQ(pos, 2);
       EXPECT_EQ(isnew, 1);
     }
@@ -92,7 +92,7 @@ TEST(TestUtilsUniqueList, TestUniquelist) {
       auto it = std::begin(list);
       ++it;
       ++it;
-      auto [pos, isnew] = list.insert(it, 1.0);  // -> [3.9, 1.0, 0.0]
+      auto [pos, isnew] = list.insert(it, 1.0); // -> [3.9, 1.0, 0.0]
       EXPECT_EQ(pos, 1);
       EXPECT_EQ(isnew, 0);
     }
@@ -101,7 +101,7 @@ TEST(TestUtilsUniqueList, TestUniquelist) {
       auto it = std::begin(list);
       ++it;
       ++it;
-      auto [pos, isnew] = list.insert(it, -5.0);  // -> [3.9, 1.0, -5.0, 0.0]
+      auto [pos, isnew] = list.insert(it, -5.0); // -> [3.9, 1.0, -5.0, 0.0]
       EXPECT_EQ(pos, 2);
       EXPECT_EQ(isnew, 1);
     }
@@ -119,6 +119,5 @@ TEST(TestUtilsUniqueList, TestUniquelist) {
       std::vector<T> expected = {-5.0, 0.0, 1.0, 3.9};
       EXPECT_EQ(out, expected);
     }
-
   }
 }

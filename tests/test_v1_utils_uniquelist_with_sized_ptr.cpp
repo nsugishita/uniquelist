@@ -1,12 +1,12 @@
 
-#include <vector>
 #include <iostream>
-#include <iterator>  // std::back_inserter
+#include <iterator> // std::back_inserter
+#include <vector>
 
 #include <gtest/gtest.h>
 
-#include "uniquelist/uniquelist.h"
 #include "uniquelist/sized_ptr.h"
+#include "uniquelist/uniquelist.h"
 
 TEST(TestUtilsUniqueList, TestUniquelistWithSizedPtr) {
   {
@@ -22,7 +22,8 @@ TEST(TestUtilsUniqueList, TestUniquelistWithSizedPtr) {
 
     {
       auto a = uniquelist::as_sized_ptr({3.4, 1.0, 4.9});
-      auto [pos, isnew] = list.push_back_with_hook(a, uniquelist::deepcopy<std::shared_ptr<double[]>>);
+      auto [pos, isnew] = list.push_back_with_hook(
+          a, uniquelist::deepcopy<std::shared_ptr<double[]>>);
       EXPECT_EQ(pos, 1);
       EXPECT_EQ(isnew, 1);
     }

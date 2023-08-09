@@ -23,7 +23,7 @@ namespace uniquelist {
 /**
  * @brief Shared ptr with size
  *
- * This struct keeps a shared pointer and the size of the pointed 
+ * This struct keeps a shared pointer and the size of the pointed
  * memory block.
  *
  * One can compare two sized_ptrs in the shortlex order using `<` operator.
@@ -210,10 +210,10 @@ template <typename T> auto as_sized_ptr(std::initializer_list<T> &&l) {
   for (size_t i = 0; i < std::size(l); ++i, ++it) {
     p[static_cast<long>(i)] = *it;
   }
-  return sized_ptr<std::shared_ptr<T[]>>{std::size(l), std::shared_ptr<element_type[]>{p}};
+  return sized_ptr<std::shared_ptr<T[]>>{std::size(l),
+                                         std::shared_ptr<element_type[]>{p}};
 }
 
-
-}
+} // namespace uniquelist
 
 #endif
