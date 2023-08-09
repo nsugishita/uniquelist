@@ -13,8 +13,8 @@ fi
 CMAKE="$MY_PREFIX/bin/cmake"
 CXX="$MY_PREFIX/bin/g++"
 
-rm -rf build
-CXX="$CXX" $CMAKE -S . -B build
+# rm -rf build
+# CXX="$CXX" $CMAKE -S . -B build
 CXX="$CXX" $CMAKE --build build
 
 ./build/tests/uniquelist_test

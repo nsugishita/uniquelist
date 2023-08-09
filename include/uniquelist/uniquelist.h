@@ -37,6 +37,7 @@ namespace uniquelist {
  * Similarly, the entry in the list is a link to the entry in
  * the map.
  *
+ * ```
  * map : [
  *     <smallest input value, link to the corresponding entry in the list>,
  *     <2nd smallest input value, link to the corresponding entry in the list>,
@@ -50,6 +51,7 @@ namespace uniquelist {
  *     ...
  *     <link to the entry of the last input in the map>
  * ]
+ * ```
  *
  * When one wants to retrieve the item at position n in terms
  * of the addition, first the nth entry in the list is obtained.
@@ -546,98 +548,6 @@ private:
   map_type map{};
 
 }; // struct uniquelist
-
-/**
- * @brief Deleter for a view
- *
- * This is a deleter which does not release any data.
- * This may be used for a shared_ptr which is a view of a pointer.
- */
-template <typename T> struct no_delete {
-  void operator()(T *p) const { (void)p; }
-};
-
-template <typename T> struct no_delete<T[]> {
-  void operator()(T *p) const { (void)p; }
-};
-
-template <typename I, typename T>
-auto deepcopy(const std::pair<I, std::shared_ptr<T[]>> &a) {
-  using T_ = std::remove_const_t<T>;
-  std::shared_ptr<T_[]> p(new T_[a.first]);
-  std::copy(a.second.get(), a.second.get() + a.first, p.get());
-  return std::pair<I, std::shared_ptr<T[]>>{a.first, p};
-}
-
-template <typename T> std::shared_ptr<T[]> shared_ptr_without_ownership(T *p) {
-  return std::shared_ptr<T[]>(p, no_delete<T[]>());
-}
-
-template <typename Compare> struct array_less {
-
-  template <typename I, typename T>
-  auto operator()(const std::pair<I, std::shared_ptr<T[]>> &a,
-                  const std::pair<I, std::shared_ptr<T[]>> &b) const {
-    if (a.first != b.first) {
-      return a.first < b.first;
-    }
-    Compare compare{};
-    auto ap = a.second.get();
-    auto bp = b.second.get();
-    for (I i = 0; i < a.first; ++i) {
-      if (compare(ap[i], bp[i])) {
-        return true;
-      } else if (compare(bp[i], ap[i])) {
-        return false;
-      }
-    }
-    return false;
-  }
-};
-
-template <typename T, typename Compare>
-using unique_array_list_super_class =
-    uniquelist<std::pair<size_t, std::shared_ptr<const T[]>>,
-                array_less<Compare>>;
-
-template <typename T, typename Compare = std::less<T>>
-struct unique_array_list
-    : unique_array_list_super_class<T, Compare> {
-
-  auto push_back(size_t n, const T *key) {
-    std::shared_ptr<const T[]> key_view = shared_ptr_without_ownership(key);
-    auto copy_ = [] (const std::pair<size_t, std::shared_ptr<const T[]>> &a) { return deepcopy<size_t, const T>(a);};
-    return unique_array_list_super_class<T, Compare>::push_back_with_hook({n, key_view},
-                                             copy_);
-  }
-
-  template <typename S>
-  auto insert(typename unique_array_list_super_class<T, Compare>::template iterator_wrapper<S> position, size_t n, const T *key) {
-    std::shared_ptr<const T[]> key_view = shared_ptr_without_ownership(key);
-    return unique_array_list_super_class<T, Compare>::insert_with_hook(position, {n, key_view},
-                                          deepcopy<size_t, const T>);
-  }
-
-  auto isin(size_t n, const T *key) const noexcept {
-    std::shared_ptr<const T[]> key_view = shared_ptr_without_ownership(key);
-    return unique_array_list_super_class<T, Compare>::isin({n, key_view});
-  }
-};
-
-/**
- * @brief Compare two numbers with a tolerance
- */
-struct strictly_less {
-  double rtol;
-  double atol;
-
-  strictly_less(double rtol = 1e-6, double atol = 1e-6)
-      : rtol{rtol}, atol{atol} {}
-
-  template <typename T> bool operator()(T a, T b) const {
-    return a < b - ((b > 0) ? b : -b) * this->rtol - this->atol;
-  }
-};
 
 } // namespace uniquelist
 

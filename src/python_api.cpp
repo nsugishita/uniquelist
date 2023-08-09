@@ -3,13 +3,13 @@
 #include <iostream>
 
 #include "uniquelist/uniquelist.h"
+#include "uniquelist/sized_ptr.h"
 
 namespace py = pybind11;
 
 using intlist = uniquelist::uniquelist<int>;
-using arraylist = uniquelist::unique_array_list<double, uniquelist::strictly_less>;
-using arraylistparent = uniquelist::unique_array_list_super_class<
-    double, uniquelist::strictly_less>;
+using sized_ptr = uniquelist::sized_ptr<std::shared_ptr<double[]>>;
+using arraylist = uniquelist::uniquelist<sized_ptr, uniquelist::strictly_less>;
 
 // TODO Make UniqueList pickable.
 
@@ -56,9 +56,7 @@ PYBIND11_MODULE(uniquelistpy, m) {
    )
    ;
 
-   py::class_<arraylistparent>(m, "_UniqueArrayListParent");
-
-   py::class_<arraylist, arraylistparent>(m, "UniqueArrayList")
+   py::class_<arraylist>(m, "UniqueArrayList")
    .def(py::init<>())
    .def("size", &arraylist::size, "Return the number of items in the list")
    .def("push_back",
@@ -69,7 +67,9 @@ PYBIND11_MODULE(uniquelistpy, m) {
         ss << "expected 1 dimensional but got " << array_.ndim << " dimensional";
         throw std::invalid_argument(ss.str());
       }
-      return a.push_back(array_.shape[0], static_cast<double*>(array_.ptr));
+      auto view = uniquelist::shared_ptr_without_ownership(static_cast<double*>(array_.ptr));
+      sized_ptr sized_ptr_view{static_cast<size_t>(array_.shape[0]), view};
+      return a.push_back_with_hook(sized_ptr_view, uniquelist::deepcopy<std::shared_ptr<double[]>>);
      },
      "Add an item at the end of the list if its' new"
    )
