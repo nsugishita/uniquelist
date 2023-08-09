@@ -58,7 +58,6 @@ Below is an example use in Python.
 (3, True)
 >>> lst.size()  # [0, 1.5, 2], [2, 1, 2.1, 4.3], [0], [-1]
 4
->>>
 >>> lst.erase([0, 3])
 >>> lst.size()  # [2, 1, 2.1, 4.3], [0]
 2
