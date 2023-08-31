@@ -14,7 +14,7 @@
 #include <list>        // std::list
 #include <map>         // std::map
 #include <memory>      // std::shared_ptr
-#include <type_traits> // std::is_same_v
+#include <type_traits> // std::is_same
 #include <utility>     // std::pair
 
 namespace uniquelist {
@@ -122,8 +122,8 @@ protected:
     using reference = value_type &;
 
     constexpr static bool is_list_iterator =
-        (std::is_same_v<S, typename list_type::iterator> ||
-         std::is_same_v<S, typename list_type::const_iterator>);
+        (std::is_same<S, typename list_type::iterator>::value ||
+         std::is_same<S, typename list_type::const_iterator>::value);
 
     explicit iterator_wrapper(const S &it) noexcept : it{it} {}
 
@@ -362,7 +362,10 @@ public:
    */
   template <typename S>
   auto insert(iterator_wrapper<S> position, const value_type &val) {
-    auto [it, status] = map.insert(std::pair(val, map_item_type{}));
+    // auto [it, status] = map.insert(std::pair(val, map_item_type{}));
+    auto buf = map.insert(std::pair<T, map_item_type>(val, map_item_type{}));
+    auto it = std::get<0>(buf);
+    auto status = std::get<1>(buf);
     if (status) {
       it->second.link =
           list.insert(position.get_list_iterator(), list_item_type{it});
@@ -385,7 +388,10 @@ public:
    */
   template <typename S>
   auto insert(iterator_wrapper<S> position, value_type &&val) {
-    auto [it, status] = map.try_emplace(std::move(val), map_item_type{});
+    // auto [it, status] = map.try_emplace(std::move(val), map_item_type{});
+    auto buf = map.try_emplace(std::move(val), map_item_type{});
+    auto it = std::get<0>(buf);
+    auto status = std::get<1>(buf);
     if (status) {
       it->second.link =
           list.insert(position.get_list_iterator(), list_item_type{it});
@@ -413,21 +419,24 @@ public:
   auto insert_with_hook(iterator_wrapper<S> position, const value_type &val,
                         const F &f) {
     // First, add the item without calling the hook.
-    auto [try_it, try_status] = map.insert(std::pair(val, map_item_type{}));
-    if (try_status) { // If the given item is new.
+    // auto [it, status] = map.insert(std::pair(val, map_item_type{}));
+    auto buf = map.insert(std::pair<T, map_item_type>(val, map_item_type{}));
+    auto it = std::get<0>(buf);
+    auto status = std::get<1>(buf);
+    if (status) { // If the given item is new.
       // Remove the item added above and add the one returned by the hook.
-      auto hint = try_it; // Pos just before the newly added element.
+      auto hint = it; // Pos just before the newly added element.
       ++hint;
-      map.erase(try_it); // Remove the item added above.
+      map.erase(it); // Remove the item added above.
       // Call the hook and re-insert the result to the map.
-      auto it = map.emplace_hint(hint, f(val), map_item_type{});
-      it->second.link =
-          list.insert(position.get_list_iterator(), list_item_type{it});
+      auto new_it = map.emplace_hint(hint, f(val), map_item_type{});
+      new_it->second.link =
+          list.insert(position.get_list_iterator(), list_item_type{new_it});
       return std::pair<size_t, bool>(
-          std::distance(std::begin(list), it->second.link), try_status);
+          std::distance(std::begin(list), new_it->second.link), status);
     } else { // If the given item is not new.
       return std::pair<size_t, bool>(
-          std::distance(std::begin(list), try_it->second.link), try_status);
+          std::distance(std::begin(list), it->second.link), status);
     }
   }
 

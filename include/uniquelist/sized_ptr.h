@@ -15,7 +15,7 @@
 #include <initializer_list>
 #include <iostream>
 #include <memory>
-#include <type_traits>
+#include <type_traits> // std::is_arithmetic
 #include <vector>
 
 namespace uniquelist {
@@ -97,10 +97,8 @@ struct strictly_less {
   strictly_less(double rtol = 1e-6, double atol = 1e-6)
       : rtol{rtol}, atol{atol} {}
 
-  template <typename T>
-  bool operator()(T a, T b) const
-    requires std::integral<T> || std::floating_point<T>
-  {
+  template <typename T, std::enable_if_t<std::is_arithmetic<T>::value, int> = 0>
+  bool operator()(T a, T b) const {
     return a < b - ((b > 0) ? b : -b) * this->rtol - this->atol;
   }
 
@@ -155,9 +153,9 @@ template <typename T> auto as_shared_ptr(std::initializer_list<T> &&l) {
   using element_type = std::remove_extent_t<T>;
   using nonconst_element_type = std::remove_const_t<std::remove_extent_t<T>>;
   std::shared_ptr<nonconst_element_type[]> p{
-      new nonconst_element_type[std::size(l)]()};
+      new nonconst_element_type[l.size()]()};
   auto it = std::begin(l);
-  for (size_t i = 0; i < std::size(l); ++i, ++it) {
+  for (size_t i = 0; i < l.size(); ++i, ++it) {
     p[static_cast<long>(i)] = *it;
   }
   return std::shared_ptr<element_type[]>{p};
@@ -205,12 +203,12 @@ template <typename T> auto as_sized_ptr(std::initializer_list<T> &&l) {
   using element_type = std::remove_extent_t<T>;
   using nonconst_element_type = std::remove_const_t<std::remove_extent_t<T>>;
   std::shared_ptr<nonconst_element_type[]> p{
-      new nonconst_element_type[std::size(l)]()};
+      new nonconst_element_type[l.size()]()};
   auto it = std::begin(l);
-  for (size_t i = 0; i < std::size(l); ++i, ++it) {
+  for (size_t i = 0; i < l.size(); ++i, ++it) {
     p[static_cast<long>(i)] = *it;
   }
-  return sized_ptr<std::shared_ptr<T[]>>{std::size(l),
+  return sized_ptr<std::shared_ptr<T[]>>{l.size(),
                                          std::shared_ptr<element_type[]>{p}};
 }
 

@@ -16,7 +16,7 @@ target_include_directories(${PROJECT_NAME}
         # where external projects will look for the library's public headers
         $<INSTALL_INTERFACE:${CMAKE_INSTALL_INCLUDEDIR}>
 )
-target_compile_features(${PROJECT_NAME} INTERFACE cxx_std_20)
+target_compile_features(${PROJECT_NAME} INTERFACE cxx_std_17)
 
 
 # Build the Python module.
@@ -30,7 +30,7 @@ FetchContent_MakeAvailable(pybind11)
 
 pybind11_add_module(uniquelistpy src/python_api.cpp)
 target_include_directories(uniquelistpy PRIVATE include)
-target_compile_features(uniquelistpy PRIVATE cxx_std_20)
+target_compile_features(uniquelistpy PRIVATE cxx_std_17)
 
 
 # Run tests.
