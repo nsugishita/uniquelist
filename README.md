@@ -2,7 +2,7 @@
 
 C++/Python library which provides a list which stores unique elements/arrays.
 This is similar to `set` in C++/Python, but this sorts the elements in the order of addition.
-C++ and Python interfaces are available.
+C++17 is required to build the library. C++ and Python interfaces are available.
 
 # Python Example
 
